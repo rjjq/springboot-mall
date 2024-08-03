@@ -1,5 +1,6 @@
 package com.rjjq.springbootmall.service;
 
+import com.rjjq.springbootmall.constant.ProductCategory;
 import com.rjjq.springbootmall.dto.ProductRequest;
 import com.rjjq.springbootmall.model.Product;
 
@@ -14,5 +15,5 @@ public interface ProductService {
 
     void deleteProductById(Integer productId);
 
-    List<Product> getProducts();
+    List<Product> getProducts(ProductCategory category, String search);
 }
