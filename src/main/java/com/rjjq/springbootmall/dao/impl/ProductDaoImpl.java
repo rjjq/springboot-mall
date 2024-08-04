@@ -30,18 +30,7 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1" ;
         Map<String, Object> map = new HashMap<>();
 
-        ProductCategory category = productQueryPrams.getCategory();
-        String search = productQueryPrams.getSearch();
-
-        if (category != null) {
-            sql += " AND category = :category";
-            map.put("category", category.name());
-        }
-
-        if (search != null) {
-            sql += " AND product_name like :search";
-            map.put("search", "%"+search+"%");
-        }
+        sql = addFilteringSql(sql, map, productQueryPrams);
 
         String orderBy = productQueryPrams.getOrderBy();
         String sort = productQueryPrams.getSort();
@@ -63,6 +52,14 @@ public class ProductDaoImpl implements ProductDao {
         String sql = "SELECT count(*) FROM product WHERE 1=1" ;
         Map<String, Object> map = new HashMap<>();
 
+        sql = addFilteringSql(sql, map, productQueryPrams);
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
+    private static String addFilteringSql(String sql, Map<String, Object> map, ProductQueryPrams productQueryPrams) {
         ProductCategory category = productQueryPrams.getCategory();
         String search = productQueryPrams.getSearch();
 
@@ -75,10 +72,7 @@ public class ProductDaoImpl implements ProductDao {
             sql += " AND product_name like :search";
             map.put("search", "%"+search+"%");
         }
-
-        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
-
-        return total;
+        return sql;
     }
 
     @Override
