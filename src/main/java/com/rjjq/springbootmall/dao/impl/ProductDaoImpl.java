@@ -60,7 +60,7 @@ public class ProductDaoImpl implements ProductDao {
 
     @Override
     public Integer countProduct(ProductQueryPrams productQueryPrams) {
-        String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1" ;
+        String sql = "SELECT count(*) FROM product WHERE 1=1" ;
         Map<String, Object> map = new HashMap<>();
 
         ProductCategory category = productQueryPrams.getCategory();
@@ -76,9 +76,9 @@ public class ProductDaoImpl implements ProductDao {
             map.put("search", "%"+search+"%");
         }
 
-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
 
-        return productList.size();
+        return total;
     }
 
     @Override
