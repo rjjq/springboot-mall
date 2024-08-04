@@ -1,6 +1,7 @@
 package com.rjjq.springbootmall.controller;
 
 import com.rjjq.springbootmall.constant.ProductCategory;
+import com.rjjq.springbootmall.dto.ProductQueryPrams;
 import com.rjjq.springbootmall.dto.ProductRequest;
 import com.rjjq.springbootmall.model.Product;
 import com.rjjq.springbootmall.service.ProductService;
@@ -20,10 +21,20 @@ public class ProductController {
 
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
+            // Fitering
             @RequestParam(required = false) ProductCategory category,
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+            // Sorting
+            @RequestParam(defaultValue = "created_date") String orderBy,
+            @RequestParam(defaultValue = "desc") String sort
     ) {
-        List<Product> productList = productService.getProducts(category, search);
+        ProductQueryPrams productQueryPrams = new ProductQueryPrams();
+        productQueryPrams.setCategory(category);
+        productQueryPrams.setSearch(search);
+        productQueryPrams.setOrderBy(orderBy);
+        productQueryPrams.setSort(sort);
+
+        List<Product> productList = productService.getProducts(productQueryPrams);
 
         return ResponseEntity.status(HttpStatus.OK).body(productList);
     }

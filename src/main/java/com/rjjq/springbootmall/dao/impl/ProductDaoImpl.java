@@ -2,6 +2,7 @@ package com.rjjq.springbootmall.dao.impl;
 
 import com.rjjq.springbootmall.constant.ProductCategory;
 import com.rjjq.springbootmall.dao.ProductDao;
+import com.rjjq.springbootmall.dto.ProductQueryPrams;
 import com.rjjq.springbootmall.dto.ProductRequest;
 import com.rjjq.springbootmall.model.Product;
 import com.rjjq.springbootmall.rowmapper.ProductRowMapper;
@@ -25,9 +26,12 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryPrams productQueryPrams) {
         String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE 1=1" ;
         Map<String, Object> map = new HashMap<>();
+
+        ProductCategory category = productQueryPrams.getCategory();
+        String search = productQueryPrams.getSearch();
 
         if (category != null) {
             sql += " AND category = :category";
@@ -38,6 +42,12 @@ public class ProductDaoImpl implements ProductDao {
             sql += " AND product_name like :search";
             map.put("search", "%"+search+"%");
         }
+
+        String orderBy = productQueryPrams.getOrderBy();
+        String sort = productQueryPrams.getSort();
+
+        sql += " ORDER BY " + orderBy + " " + sort;
+
         List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 
         return productList;
