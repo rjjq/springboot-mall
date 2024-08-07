@@ -1,6 +1,7 @@
 package com.rjjq.springbootmall.service.impl;
 
 import com.rjjq.springbootmall.dao.UserDao;
+import com.rjjq.springbootmall.dto.UserLoginRequest;
 import com.rjjq.springbootmall.dto.UserRegisterRequest;
 import com.rjjq.springbootmall.model.User;
 import com.rjjq.springbootmall.service.UserService;
@@ -32,5 +33,22 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return userDao.createUser(userRegisterRequest);
+    }
+
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+
+        if (user == null) {
+            logger.warn("email {} is not registered.", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
+        if (user.getPassword().equals(userLoginRequest.getPassword())) {
+            return user;
+        } else {
+            logger.warn("{} password not match.", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
     }
 }
